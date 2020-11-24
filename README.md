@@ -88,7 +88,7 @@ The Classroom Class will help us keep track of Classrooms and the Students that 
 
 By using the Campus Tracing class, we will be able to use several methods that will help us test the population, look for immediate contacts among the population, quarantine students at risk and infected students, process student interactions by updating immediate contacts, and generate statistics based on our population.
 
-![image-20201124181209371](raw.githubusercontent.com/fritzpeace/Images/blob/main/image.png)
+![image-20201124181209371](raw.githubusercontent.com/fritzpeace/Images/main/image.png)
 
 - **testStudents** will look for positive students. If a Student interacts with another Person who is infected, there is an infectionProb probability that the Student will become infected. All immediateContacts (Friends, Peers, and Strangers) are quarantined. When students are tested, quarantined students will have the amount of days left in their quarantine updated, and immune students will be disregarded. Immediate contacts for students are erased after each testing, as students at risk (1-step of separation from infected student) are immediately isolated/quarantined.
 - **updateStudentImmediateContacts** will update student immediate contacts by passing the id of the student, as well as an ArrayList<Person> with all the individuals he was in immediate contact to. 
