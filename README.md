@@ -43,6 +43,7 @@ Our Driver class will be responsible hold an ArrayList of Students holding the e
 For our abstraction, we will have an abstract class Person:
 
 ![image-20201124180837521]
+
 Each Person will implement the Health class, which will allow each Person to have their health status which can be monitored.
 
 
@@ -52,6 +53,7 @@ Each Person will implement the Health class, which will allow each Person to hav
 For our abstraction, we will have a Student class.
 
 ![image-20201124180917196]
+
 Students are our population of interest and will be closely monitored by our Contact Tracing program. Students interact with other Students (friends and class-mates) and Strangers (where infections will be originating from).
 
 
@@ -69,6 +71,7 @@ For our abstraction, we will have Strangers. Strangers have the unique character
 The Health Interface will be used to track the infection/quarantine status of each Person.
 
 ![image-20201124181032723]
+
 The decision to implement Health as an interface instead of a super class is as it makes more sense to have all the data members and methods in a separate capsule.
 
 
