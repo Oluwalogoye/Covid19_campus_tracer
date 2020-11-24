@@ -4,7 +4,7 @@
 
 **Class:** CMS 270, Dr. Elva
 
-
+( I need to figure out how to include images in markdown so until then we won't have images)
 
 ## Abstraction
 
@@ -30,9 +30,9 @@ Our Driver class will be responsible hold an ArrayList of Students holding the e
 
 ## Inheritance Hierarchy
 
-![image-20201124180700939](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124180700939.png)
+![image-20201124180700939]
 
-![image-20201124180710548](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124180710548.png)
+![image-20201124180710548]
 
 
 
@@ -42,8 +42,7 @@ Our Driver class will be responsible hold an ArrayList of Students holding the e
 
 For our abstraction, we will have an abstract class Person:
 
-![image-20201124180837521](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124180837521.png)
-
+![image-20201124180837521]
 Each Person will implement the Health class, which will allow each Person to have their health status which can be monitored.
 
 
@@ -52,8 +51,7 @@ Each Person will implement the Health class, which will allow each Person to hav
 
 For our abstraction, we will have a Student class.
 
-![image-20201124180917196](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124180917196.png)
-
+![image-20201124180917196]
 Students are our population of interest and will be closely monitored by our Contact Tracing program. Students interact with other Students (friends and class-mates) and Strangers (where infections will be originating from).
 
 
@@ -62,7 +60,7 @@ Students are our population of interest and will be closely monitored by our Con
 
 For our abstraction, we will have Strangers. Strangers have the unique characteristic of having a risk factor, which is the probability the Stranger is infected when it is created.
 
-![image-20201124180954352](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124180954352.png)
+![image-20201124180954352]
 
 
 
@@ -70,8 +68,7 @@ For our abstraction, we will have Strangers. Strangers have the unique character
 
 The Health Interface will be used to track the infection/quarantine status of each Person.
 
-![image-20201124181032723](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124181032723.png)
-
+![image-20201124181032723]
 The decision to implement Health as an interface instead of a super class is as it makes more sense to have all the data members and methods in a separate capsule.
 
 
@@ -80,7 +77,7 @@ The decision to implement Health as an interface instead of a super class is as 
 
 The Classroom Class will help us keep track of Classrooms and the Students that share classes.
 
-![image-20201124181146768](C:\Users\Fritz PC\AppData\Roaming\Typora\typora-user-images\image-20201124181146768.png)
+![image-20201124181146768]
 
 
 
@@ -88,7 +85,7 @@ The Classroom Class will help us keep track of Classrooms and the Students that 
 
 By using the Campus Tracing class, we will be able to use several methods that will help us test the population, look for immediate contacts among the population, quarantine students at risk and infected students, process student interactions by updating immediate contacts, and generate statistics based on our population.
 
-![image-20201124181209371](raw.githubusercontent.com/fritzpeace/Images/main/image.png)
+![image-20201124181209371]
 
 - **testStudents** will look for positive students. If a Student interacts with another Person who is infected, there is an infectionProb probability that the Student will become infected. All immediateContacts (Friends, Peers, and Strangers) are quarantined. When students are tested, quarantined students will have the amount of days left in their quarantine updated, and immune students will be disregarded. Immediate contacts for students are erased after each testing, as students at risk (1-step of separation from infected student) are immediately isolated/quarantined.
 - **updateStudentImmediateContacts** will update student immediate contacts by passing the id of the student, as well as an ArrayList<Person> with all the individuals he was in immediate contact to. 
