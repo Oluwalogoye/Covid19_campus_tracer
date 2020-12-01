@@ -1,0 +1,29 @@
+File 1 - Teachers
+<first name> <last name> <age> <class> <class> <class>
+
+File 2 - All students
+<first name> <last name> <age> <id> <class> <class> <class>
+
+File 3 - All strangers
+<first name> <last name>  <age> 
+
+File 4 - Testing
+<Days since semester started>
+<Student> <first name> <last name> <first name> <last name> <first name> <last name> 
+
+==========================================================================================
+N O T E S
+==========================================================================================
+Student - Initialization (when a student is initialized he will have the following characteristics)
+isInfected = false
+isQuarantined = false
+
+------------------------------------------
+Probability of getting infected is equal to age/100.
+Stranger has a (1 - age)/100 chance of being infected when initialized.
+
+------------------------------------------
+Cameron - Create Sample Files 
+Lauren - updateStudentImmediateContacts
+Logo/Daniel - testStudents & Driver
+Fritz - displayStatistics
