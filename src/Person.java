@@ -6,9 +6,8 @@ public abstract class Person extends HasHealth {
 	private int age;
 	
 	// constructors
-	public Person(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
-			float infectionProb, String name, int age) {
-		super(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb);
+	public Person(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine, String name, int age) {
+		super(isInfected, isQuarantined, isImmune, daysInQuarantine);
 		this.name = name;
 		this.age = age;
 	}

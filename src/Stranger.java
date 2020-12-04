@@ -5,9 +5,8 @@ public class Stranger extends Person{
 	private float riskFactor;
 
 	// constructors
-	public Stranger(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
-			float infectionProb, String name, int age, float riskFactor) {
-		super(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age);
+	public Stranger(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine, String name, int age, float riskFactor) {
+		super(isInfected, isQuarantined, isImmune, daysInQuarantine,  name, age);
 		this.riskFactor = riskFactor;
 	}
 

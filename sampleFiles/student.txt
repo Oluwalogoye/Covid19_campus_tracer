@@ -1,0 +1,9 @@
+33
+0001 Cameron Dolly 16 false false false 0
+0002 Daniel Liew 16 false false false 0
+
+
+<id> <first name> <last name> <age> <isInfected> <isQurantined> <isImmune> <daysInQuarantine>
+(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
+float infectionProb, String name, int age, int id, ArrayList<Classroom> classesAttending,
+ArrayList<Stranger> strangerInteractions, ArrayList<Student> friendInteractions

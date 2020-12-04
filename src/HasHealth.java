@@ -6,40 +6,37 @@ public abstract class HasHealth {
 	private boolean isQuarantined;
 	private boolean isImmune;
 	private int daysInQuarantine;
-	private float infectionProb;
 	
 	// constructor
-	public HasHealth(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
-			float infectionProb) {
+	public HasHealth(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine) {
 		this.isInfected = isInfected;
 		this.isQuarantined = isQuarantined;
 		this.isImmune = isImmune;
 		this.daysInQuarantine = daysInQuarantine;
-		this.infectionProb = infectionProb;
 	}
 
 	// methods
-	public boolean isInfected() {
+	public boolean getIsInfected() {
 		return isInfected;
 	}
 
-	public void setInfected(boolean isInfected) {
+	public void setIsInfected(boolean isInfected) {
 		this.isInfected = isInfected;
 	}
 
-	public boolean isQuarantined() {
+	public boolean getIsQuarantined() {
 		return isQuarantined;
 	}
 
-	public void setQuarantined(boolean isQuarantined) {
+	public void setIsQuarantined(boolean isQuarantined) {
 		this.isQuarantined = isQuarantined;
 	}
 
-	public boolean isImmune() {
+	public boolean getIsImmune() {
 		return isImmune;
 	}
 
-	public void setImmune(boolean isImmune) {
+	public void setIsImmune(boolean isImmune) {
 		this.isImmune = isImmune;
 	}
 
@@ -49,13 +46,13 @@ public abstract class HasHealth {
 
 	public void setDaysInQuarantine(int daysInQuarantine) {
 		this.daysInQuarantine = daysInQuarantine;
+		if(daysInQuarantine > 14){
+			this.daysInQuarantine = 0;
+			this.isQuarantined = false;
+			this.isInfected = false;
+			this.isImmune = true;
+		}
 	}
 
-	public float getInfectionProb() {
-		return infectionProb;
-	}
-
-	public void setInfectionProb(float infectionProb) {
-		this.infectionProb = infectionProb;
-	}
+	
 }

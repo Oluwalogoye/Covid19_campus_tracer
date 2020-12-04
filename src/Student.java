@@ -10,10 +10,9 @@ public class Student extends Person {
 	private ArrayList<Student> friendInteractions;
 	
 	// constructors
-	public Student(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
-			float infectionProb, String name, int age, int id, ArrayList<Classroom> classesAttending,
+	public Student(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine, String name, int age, int id, ArrayList<Classroom> classesAttending,
 			ArrayList<Stranger> strangerInteractions, ArrayList<Student> friendInteractions) {
-		super(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age);
+		super(isInfected, isQuarantined, isImmune, daysInQuarantine, name, age);
 		this.id = id;
 		this.classesAttending = classesAttending;
 		this.strangerInteractions = strangerInteractions;

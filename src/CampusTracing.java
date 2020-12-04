@@ -1,17 +1,18 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class CampusTracing {
     
     // data members
     private ArrayList<Student> population;
-    private String lastChecked;
+    private int lastDayTested;
     
     /**
      * constructor
      */
-    public CampusTracing(ArrayList<Student> p, String c) {
+    public CampusTracing(ArrayList<Student> p, int d) {
         population = p;
-        lastChecked = c;
+        lastDayTested = d;
     }
 
     /**
@@ -29,24 +30,84 @@ public class CampusTracing {
     }
 
     /**
-     * @return lastChecked
+     * @return lastDayTested
      */
-    public String getLastChecked() {
-        return lastChecked;
+    public int getLastDayTested() {
+        return lastDayTested;
     }
 
     /**
-     * @param c
+     * @param d
      */
-    public void setLastChecked(String c) {
-        lastChecked = c;
+    public void setLastDayTested(int d) {
+        lastDayTested = d;
     }
 
     /**
      * @param p
      */
-    public void testStudents(ArrayList<Student> p) {
-
+    public void testStudents(int day) 
+    {
+        boolean firstTestToday = false;
+        // If this is the first time testing today
+        if(day != lastDayTested)
+        {
+            // Update that
+            lastDayTested = day;
+            firstTestToday = true;
+        }
+        // For each student
+        for(Student student : population)
+        {
+            // Update quarantine status
+            if(firstTestToday && student.getIsQuarantined())
+            {
+                student.setDaysInQuarantine(student.getDaysInQuarantine() + 1);
+            }
+            // Check if a student is immune (if he is he cannot get infected)
+            if(!student.getIsImmune())
+            {
+                ArrayList<Stranger> strangers = student.getStrangerInteractions();
+                ArrayList<Student> friends = student.getFriendInteractions();
+                // loop for stranger
+                for (Stranger stranger : strangers)
+                {
+                    if(stranger.getIsInfected() && !student.getIsQuarantined())
+                    {
+                        // If the stranger is infected quarantine student and get a random change of student actually becoming infected
+                        student.setIsQuarantined(true);
+                        student.setDaysInQuarantine(0);
+                        // Infect student based on the infection probability ([1 - age] /100)
+                        Random random = new Random();
+                        if(random.nextInt(100) < ((1 - student.getAge())/100))
+                        {
+                            student.setIsInfected(true);
+                        }
+                    }
+                    
+                }
+                // loop for friend
+                for (Student friend : friends)
+                {
+                    if(friend.getIsInfected() && !student.getIsQuarantined())
+                    {
+                        // If the stranger is infected quarantine student and get a random change of student actually becoming infected
+                        student.setIsQuarantined(true);
+                        student.setDaysInQuarantine(0);
+                        // Infect student based on the infection probability ([1 - age] /100)
+                        Random random = new Random();
+                        if(random.nextInt(100) < ((1 - student.getAge())/100))
+                        {
+                            student.setIsInfected(true);
+                        }
+                    }
+                }
+            }
+            // Immediate contacts for students are erased after each testing, as students at risk 
+            // (1-step of separation from infected student) are immediately isolated/quarantined.
+            student.setStrangerInteractions(new ArrayList<Stranger>());
+            student.setFriendInteractions(new ArrayList<Student>());
+        }
     }
 
     /**
@@ -54,23 +115,33 @@ public class CampusTracing {
      * @param s
      * @param newContacts
      */
-    public void updateStudentImmediateContacts(int id, ArrayList<Person> immediateContacts) {
-        
-            for (int i = 0; i < population.size(); i++){
-            Student stest = population.get(i);
-            if (id == stest.getId()){
-                for (int n = 0; n < immediateContacts.size(); n++){
-                    if (immediateContacts.get(n) instanceof Stranger){
-                        stest.getStrangerInteractions.add(immediateContacts.get(n));
-                    } else if (immediateContacts.get(n) instanceof Student){
-                        stest.getFriendInteractions.add(immediateContacts.get(n));
+    public void updateStudentImmediateContacts(int id, ArrayList<Person> immediateContacts) 
+    {
+        for (Student student : population)
+        {
+            if(id == student.getId())
+            {
+                for(Person contact : immediateContacts)
+                {
+                    if(contact instanceof Stranger)
+                    {
+                        ArrayList<Stranger> sI = student.getStrangerInteractions();
+                        sI.add((Stranger)contact);
+                        student.setStrangerInteractions(sI);
+                    }
+                    else if(contact instanceof Student)
+                    {
+                        ArrayList<Student> sI = student.getFriendInteractions();
+                        sI.add((Student)contact);
+                        student.setFriendInteractions(sI);
                     }
                 }
-            } else {
+            }
+            else
+            {
                 System.out.println("This Student does not exist");
             }
         }
-  
     }
 
     /**
@@ -100,13 +171,13 @@ public class CampusTracing {
     /**
      * @param p
      */
-    public void displayStatistics(ArrayList<Student> p) 
+    public void displayStatistics() 
     {
         // Need to figure out what data structure to make lastChecked.
         // Maybe an ArrayList of booleans for each day since semester started
         if(!lastChecked(day))
         {
-                testStudents(p);
+                testStudents(population);
         }
 
         // Statistics data holder
@@ -117,7 +188,7 @@ public class CampusTracing {
         int firstDayS, lastDayS;
         
         // Populate statistics
-        for(Student s : p)
+        for(Student s : population)
         {
             if(s.isInfected())
             {
@@ -146,7 +217,7 @@ public class CampusTracing {
 
         // Process Statistics
         ArrayList<String> statistics;                                   // Hold all the strings to be printed
-        int percentInfected = (infected.size() / p.size()) * 100;       // Percent of Infected People
+        int percentInfected = (infected.size() / population.size()) * 100;       // Percent of Infected People
         String riskLevel = getRiskLevel(percentInfected);               // Risk Level
         int avgQuarantine = daysInQuarantine / quarantined.size();      // Mean Days Spent in Quarantine
         // graph days spent in quarantine. calculate variance/std dev.
