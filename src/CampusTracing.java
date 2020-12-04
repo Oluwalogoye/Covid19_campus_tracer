@@ -56,6 +56,20 @@ public class CampusTracing {
      */
     public void updateStudentImmediateContacts(int id, ArrayList<Person> immediateContacts) {
         
+            for (int i = 0; i < population.size(); i++){
+            Student stest = population.get(i);
+            if (id == stest.getId()){
+                for (int n = 0; n < immediateContacts.size(); n++){
+                    if (immediateContacts.get(n) instanceof Stranger){
+                        stest.getStrangerInteractions.add(immediateContacts.get(n));
+                    } else if (immediateContacts.get(n) instanceof Student){
+                        stest.getFriendInteractions.add(immediateContacts.get(n));
+                    }
+                }
+            } else {
+                System.out.println("This Student does not exist");
+            }
+        }
   
     }
 
