@@ -1,10 +1,20 @@
-Cameron Dolly 18 false false false 0
-Daniel Liew 18 false false false 0
-Aimie Buckner 18 false false false 0
-Fritz Paz 18 false false false 0
-Caio Ratliff 18 false false false 0
-Tulisa O'connor 18 false false false 0
-Hussein Tate 18 false false false 0
-Logo Olagoke 18 false false false 0
-Saxon Davison 18 false false false 0
-Shaun Stacey 18 false false false 0
+Cameron Dolly 18 1 false false false 0
+PAIN101 CMS122
+Daniel Liew 18 2 false false false 0
+CMS120
+Aimie Buckner 18 3 false false false 0
+PAIN100
+Fritz Paz 18 4 false false false 0
+DTA250
+Caio Ratliff 18 5 false false false 0
+DTA250
+Tulisa O'connor 6 18 false false false 0
+DTA250
+Hussein Tate 18 7 false false false 0
+DTA250
+Logo Olagoke 18 8 false false false 0
+DTA250
+Saxon Davison 18 9 false false false 0
+DTA250
+Shaun Stacey 18 10 false false false 0
+DTA250
