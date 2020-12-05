@@ -15,11 +15,15 @@ public class Driver {
 	public static void main (String[] args) {
 		
 		campusTracing = new CampusTracing();
-		//
+		// 
     	createTeachers(new File("teachers.txt"));
     	createClasses(new File("classes.txt"));
-    	createStudents(new File("students"));
+    	createStrangers(new File("strangers.txt"));
+    	createStudents(new File("students.txt"));
     	createInteractions(new File("interactions.txt"));
+    	// 
+    	campusTracing.testStudents();
+    	campusTracing.displayStatistics();
     	
     }
 	
@@ -30,13 +34,13 @@ public class Driver {
 			Scanner scanner = new Scanner(file);
 			while(scanner.hasNextLine()) {
 				String[] tokens = scanner.nextLine().split(" ");
-				String name = tokens[0] + tokens[1];
+				String name = tokens[0] + " " + tokens[1];
 				int age = Integer.valueOf(tokens[2]);
 				boolean isInfected = Boolean.valueOf(tokens[3]);
 				boolean isQuarantined = Boolean.valueOf(tokens[4]);
 				boolean isImmune = Boolean.valueOf(tokens[5]);
 				int daysInQuarantine = Integer.valueOf(tokens[6]);
-				float infectionProb = Float.valueOf(age/100);
+				float infectionProb = age/100.0f;
 				ArrayList<Classroom> classes = new ArrayList<>(); 
 				Teacher teacher = new Teacher(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age, classes);
 				teachers.add(teacher);
@@ -60,9 +64,11 @@ public class Driver {
 					String className = tokens[i];
 					int num = 0;
 					ArrayList<Student> peers = new ArrayList<>();
-					classrooms.add(new Classroom(className, num, peers));
+					Classroom classroom = new Classroom(className, num, peers, teacher);
+					classrooms.add(classroom);
 				}
 			}
+			scanner.close();
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -74,13 +80,13 @@ public class Driver {
 			Scanner scanner = new Scanner(file);
 			while(scanner.hasNextLine()) {
 				String[] tokens = scanner.nextLine().split(" ");
-				String name = tokens[0] + tokens[1];
+				String name = tokens[0] + " " + tokens[1];
 				int age = Integer.valueOf(tokens[2]);
 				boolean isInfected = Boolean.valueOf(tokens[3]);
 				boolean isQuarantined = Boolean.valueOf(tokens[4]);
 				boolean isImmune = Boolean.valueOf(tokens[5]);
 				int daysInQuarantine = Integer.valueOf(tokens[6]);
-				float infectionProb = Float.valueOf((100 - age)/100);
+				float infectionProb = (100 - age)/100.0f;
 				Stranger stranger = new Stranger(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age);
 				strangers.add(stranger);
 			}
@@ -96,14 +102,14 @@ public class Driver {
 			Scanner scanner = new Scanner(file);
 			while(scanner.hasNextLine()) {
 				String[] tokens = scanner.nextLine().split(" ");
-				String name = tokens[0] + tokens[1];
+				String name = tokens[0] + " " + tokens[1];
 				int age = Integer.valueOf(tokens[2]);
 				int id = Integer.valueOf(tokens[3]);
 				boolean isInfected = Boolean.valueOf(tokens[4]);
 				boolean isQuarantined = Boolean.valueOf(tokens[5]);
 				boolean isImmune = Boolean.valueOf(tokens[6]);
 				int daysInQuarantine = Integer.valueOf(tokens[7]);
-				float infectionProb = Float.valueOf((age)/100);
+				float infectionProb = (age)/100.0f;
 				// map student to classes
 				String[] classNames = scanner.nextLine().split(" ");
 				ArrayList<Classroom> classes = new ArrayList<>();
@@ -118,6 +124,7 @@ public class Driver {
 					classroom.setNum(classroom.getNum() + 1);
 					classroom.getPeers().add(student);
 				}
+				students.add(student);
 
 			}
 			scanner.close();
