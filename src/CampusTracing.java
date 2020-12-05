@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
 
 public class CampusTracing {
     
@@ -12,7 +15,6 @@ public class CampusTracing {
     	
     }
     
-
 
 	public CampusTracing(ArrayList<Student> p, String c, String today) {
         population = p;
@@ -56,10 +58,84 @@ public class CampusTracing {
     			student.getStrangerInteractions().add((Stranger)person);
     	} 
     }
-
-
-    private String getRiskLevel(int percentInfected)
-    {
+    public void testStudents() {
+    	
+    	StringBuilder buffer = new StringBuilder();
+    	for(Student student: population) {
+    		// check for infected students
+        	checkIfInfected(student);
+        	if(student.getIsInfected())
+        		quarantine(student);
+        	
+        	// update quarantine dates
+        	updateQuarantineDate(student);
+        	
+        	// qurantine entire class if student infected
+        	if(student.getIsInfected()) {
+        		quarantinePeopleInSameClasses(student);
+        	}
+        	// write to buffer
+        	//
+    	}
+    }
+    private void quarantinePeopleInSameClasses(Student student) {
+    	for(Classroom classroom: student.getClassesAttending()) {
+    		Teacher teacher = classroom.getTeacher();
+    		ArrayList<Student> peers = classroom.getPeers();
+    		// quarantine teacher
+    		quarantine(teacher);
+    		// quarantine classroom
+    		for(Student peer: peers) {
+    			quarantine(peer);
+    		}
+    	}
+    }
+    private void quarantine(Person person) {
+    	if(!person.getIsQuarantined() && !person.getIsImmune()) {
+			person.setDaysInQuarantine(0);
+			person.setQuarantined(true);
+		}
+    }
+    
+    private void updateQuarantineDate(Student student) {
+    
+		if(student.getIsQuarantined()) {
+			int daysSinceLastTested = Integer.valueOf(today) - Integer.valueOf(student.getDateLastTested());
+			int daysSpent = student.getDaysInQuarantine();
+			student.setDaysInQuarantine(daysSpent + daysSinceLastTested);
+		}
+    	
+    }
+    private void checkIfInfected(Student student) {
+    
+		boolean isImmune = student.getIsImmune();
+		for(Person contact: student.getStrangerInteractions()) {
+			if(contact instanceof Student)
+				determineIfInfected(!isImmune && contact.getIsInfected(), student);
+			else
+				determineIfInfected(contact instanceof Stranger, student);
+		}
+		
+		for(Person contact: student.getFriendInteractions()) {
+			if(contact instanceof Student)
+				determineIfInfected(!isImmune && contact.getIsInfected(), student);
+			else
+				determineIfInfected(contact instanceof Stranger, student);
+		}
+		
+		student.setDateLastTested(today);
+    	
+    }
+    private void determineIfInfected(boolean conditionForGettingInfected, Person person) {
+    	if(conditionForGettingInfected) {
+    		// if person isn't already infected
+    		if(!person.getIsInfected()) {
+    			boolean infected = Math.random() <= person.getInfectionProb();
+    			person.setInfected(infected);
+    		}
+    	}
+    }
+    private String getRiskLevel(double percentInfected) {
         if(percentInfected <= 5)
         {
             return "Low";
@@ -79,35 +155,35 @@ public class CampusTracing {
     }
 
 
-    public void displayStatistics(ArrayList<Student> p) 
+    public void displayStatistics() 
     {
     	// Need to figure out what data structure to make lastChecked.
-        // Maybe an ArrayList of booleans for each day since semester started
+    	// Maybe an ArrayList of booleans for each day since semester started
         if(!lastChecked.equals(today))
         {
-                testStudents(population);
+        	testStudents();
         }
 
         // Statistics data holder
-        ArrayList<Student> infected;
-        ArrayList<Student> quarantined;
-        ArrayList<Student> immune;
-        int daysInQuarantine;
-        int firstDayS, lastDayS;
+        ArrayList<Student> infected = new ArrayList<>();;
+        ArrayList<Student> quarantined = new ArrayList<>();
+        ArrayList<Student> immune = new ArrayList<>();
+        int daysInQuarantine = 0;
+        int firstDayS = 0, lastDayS = 0;
         
         // Populate statistics
         for(Student s : population)
         {
-            if(s.isInfected())
+            if(s.getIsInfected())
             {
                 infected.add(s);
             }
-            if(s.isQuarantined())
+            if(s.getIsQuarantined())
             {
                 quarantined.add(s);
                 daysInQuarantine += s.getDaysInQuarantine();
                 // Need to make sure the cases are right
-                if(s.getDaysInQuarantine() == 1)
+                if(s.getDaysInQuarantine() == 0)
                 {
                     
                     firstDayS++;
@@ -117,23 +193,26 @@ public class CampusTracing {
                     lastDayS++;
                 }
             }
-            if(s.isImmune())
+            if(s.getIsImmune())
             {
                 immune.add(s);
             }
         }
 
         // Process Statistics
-        ArrayList<String> statistics;                                   // Hold all the strings to be printed
-        int percentInfected = (infected.size() / population.size()) * 100;       // Percent of Infected People
+        ArrayList<String> statistics = new ArrayList<>();                                   // Hold all the strings to be printed
+        double percentInfected = ((infected.size() * 1.0) / population.size()) * 100;       // Percent of Infected People
         String riskLevel = getRiskLevel(percentInfected);               // Risk Level
-        int avgQuarantine = daysInQuarantine / quarantined.size();      // Mean Days Spent in Quarantine
+        double avgQuarantine = quarantined.size() != 0 ? ((daysInQuarantine * 1.0) / quarantined.size()) : 0;      // Mean Days Spent in Quarantine
         // graph days spent in quarantine. calculate variance/std dev.
 
         statistics.add("There are " + infected.size() + " infected studies.");
         statistics.add("This makes up for " + percentInfected + "% of the Student Body.");
-        statistics.add("There are " + quarantined.size() + "Students in quarantine, which have completed an average of " + avgQuarantine + " days already spent.");
+        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + avgQuarantine + " days already spent.");
         statistics.add( lastDayS + " students are doing their last day of quarantine, while " + firstDayS + " have been quarantined today");
         statistics.add("The campus is at a "+ riskLevel + " risk level.");
+        for(String stat: statistics) {
+        	System.out.println(stat);
+        }
     }
 }
