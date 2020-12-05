@@ -1,58 +1,55 @@
 
-public abstract class HasHealth {
+import java.util.ArrayList;
 
-	// data members
-	private boolean isInfected;
-	private boolean isQuarantined;
-	private boolean isImmune;
-	private int daysInQuarantine;
+public class Student extends Person {
 	
-	// constructor
-	public HasHealth(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine) {
-		this.isInfected = isInfected;
-		this.isQuarantined = isQuarantined;
-		this.isImmune = isImmune;
-		this.daysInQuarantine = daysInQuarantine;
+	// data members
+	private int id;
+	private ArrayList<Classroom> classesAttending;
+	private ArrayList<Stranger> strangerInteractions;
+	private ArrayList<Student> friendInteractions;
+	
+	// constructors
+	public Student(boolean isInfected, boolean isQuarantined, boolean isImmune, int daysInQuarantine,
+			float infectionProb, String name, int age, int id, ArrayList<Classroom> classesAttending,
+			ArrayList<Stranger> strangerInteractions, ArrayList<Student> friendInteractions) {
+		super(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age);
+		this.id = id;
+		this.classesAttending = classesAttending;
+		this.strangerInteractions = strangerInteractions;
+		this.friendInteractions = friendInteractions;
 	}
 
 	// methods
-	public boolean getIsInfected() {
-		return isInfected;
+	public int getId() {
+		return id;
 	}
 
-	public void setIsInfected(boolean isInfected) {
-		this.isInfected = isInfected;
+	public void setId(int id) {
+		this.id = id;
 	}
 
-	public boolean getIsQuarantined() {
-		return isQuarantined;
+	public ArrayList<Classroom> getClassesAttending() {
+		return classesAttending;
 	}
 
-	public void setIsQuarantined(boolean isQuarantined) {
-		this.isQuarantined = isQuarantined;
+	public void setClassesAttending(ArrayList<Classroom> classesAttending) {
+		this.classesAttending = classesAttending;
 	}
 
-	public boolean getIsImmune() {
-		return isImmune;
+	public ArrayList<Stranger> getStrangerInteractions() {
+		return strangerInteractions;
 	}
 
-	public void setIsImmune(boolean isImmune) {
-		this.isImmune = isImmune;
+	public void setStrangerInteractions(ArrayList<Stranger> strangerInteractions) {
+		this.strangerInteractions = strangerInteractions;
 	}
 
-	public int getDaysInQuarantine() {
-		return daysInQuarantine;
+	public ArrayList<Student> getFriendInteractions() {
+		return friendInteractions;
 	}
 
-	public void setDaysInQuarantine(int daysInQuarantine) {
-		this.daysInQuarantine = daysInQuarantine;
-		if(daysInQuarantine > 14){
-			this.daysInQuarantine = 0;
-			this.isQuarantined = false;
-			this.isInfected = false;
-			this.isImmune = true;
-		}
-	}
-
-	
+	public void setFriendInteractions(ArrayList<Student> friendInteractions) {
+		this.friendInteractions = friendInteractions;
+	}	
 }
