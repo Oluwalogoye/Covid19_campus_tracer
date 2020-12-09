@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.FileNotFoundException;
 
 public class CampusTracing {
@@ -61,7 +62,8 @@ public class CampusTracing {
     public void testStudents() {
     	
     	StringBuilder buffer = new StringBuilder();
-    	for(Student student: population) {
+    	for(int i = 0; i < population.size(); i++) {
+    		Student student = population.get(i);
     		// check for infected students
         	checkIfInfected(student);
         	if(student.getIsInfected())
@@ -75,7 +77,25 @@ public class CampusTracing {
         		quarantinePeopleInSameClasses(student);
         	}
         	// write to buffer
-        	//
+        	buffer.append(student.toString() + "\n");
+        	ArrayList<Classroom> classes = student.getClassesAttending(); 
+        	for(int j = 0; j < classes.size(); j++) {
+        		buffer.append(classes.get(j).getName());
+        		if(j != (classes.size() - 1))
+        			buffer.append(" ");
+        	}
+        	// add new line
+        	if(i != (population.size() - 1))
+        		buffer.append("\n");
+    	}
+    	// write updates from buffer
+    	try {
+    		FileWriter writer = new FileWriter("students.txt", false);
+    		writer.write(buffer.toString());
+    		System.out.println(buffer);
+    		writer.close();
+    	} catch (IOException e) {
+    		e.printStackTrace();
     	}
     }
     private void quarantinePeopleInSameClasses(Student student) {
