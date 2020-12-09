@@ -1,238 +1,190 @@
-import java.util.ArrayList;
+import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.FileNotFoundException;
-
-public class CampusTracing {
-    
-    // data members
-    private ArrayList<Student> population;
-    private String lastChecked;
-    private String today;
-    
+import java.util.ArrayList;
+ 
+public class Driver {
   
-    public CampusTracing() {
+  public static ArrayList<Student> students;
+  public static ArrayList<Teacher> teachers;
+  public static ArrayList<Classroom> classrooms;
+  public static ArrayList<Stranger> strangers;
+  public static CampusTracing campusTracing;
+  
+	public static void main (String[] args) {
+		
+		campusTracing = new CampusTracing();
+		// 
+    	createTeachers(new File("teachers.txt"));
+    	createClasses(new File("classes.txt"));
+    	createStrangers(new File("strangers.txt"));
+    	createStudents(new File("students.txt"));
+    	createInteractions(new File("interactions.txt"));
+    	// 
+    	campusTracing.testStudents();
+    	campusTracing.displayStatistics();
     	
     }
-    
-
-	public CampusTracing(ArrayList<Student> p, String c, String today) {
-        population = p;
-        lastChecked = c;
-        this.today = today;
-    }
-
-    public ArrayList<Student> getPopulation() {
-        return population;
-    }
-
-    public void setPopulation(ArrayList<Student> p) {
-        population = p;
-    }
-
-    public String getLastChecked() {
-        return lastChecked;
-    }
-
-    public void setLastChecked(String c) {
-        lastChecked = c;
-    }
-
-    public void testStudents(ArrayList<Student> p) {
-
-    }
-    public String getToday() {
-		return today;
-	}
-
-	public void setToday(String today) {
-		this.today = today;
-	}
-
-    public void updateStudentImmediateContacts(Student student, ArrayList<Person> immediateContacts) {
-        
-    	for(Person person: immediateContacts) {
-    		if (person instanceof Student)
-    			student.getFriendInteractions().add((Student)person);
-    		else 
-    			student.getStrangerInteractions().add((Stranger)person);
-    	} 
-    }
-    public void testStudents() {
-    	
-    	StringBuilder buffer = new StringBuilder();
-    	for(int i = 0; i < population.size(); i++) {
-    		Student student = population.get(i);
-    		// check for infected students
-        	checkIfInfected(student);
-        	if(student.getIsInfected())
-        		quarantine(student);
-        	
-        	// update quarantine dates
-        	updateQuarantineDate(student);
-        	
-        	// qurantine entire class if student infected
-        	if(student.getIsInfected()) {
-        		quarantinePeopleInSameClasses(student);
-        	}
-        	// write to buffer
-        	buffer.append(student.toString() + "\n");
-        	ArrayList<Classroom> classes = student.getClassesAttending(); 
-        	for(int j = 0; j < classes.size(); j++) {
-        		buffer.append(classes.get(j).getName());
-        		if(j != (classes.size() - 1))
-        			buffer.append(" ");
-        	}
-        	// add new line
-        	if(i != (population.size() - 1))
-        		buffer.append("\n");
-    	}
-    	// write updates from buffer
-    	try {
-    		FileWriter writer = new FileWriter("students.txt", false);
-    		writer.write(buffer.toString());
-    		System.out.println(buffer);
-    		writer.close();
-    	} catch (IOException e) {
-    		e.printStackTrace();
-    	}
-    }
-    private void quarantinePeopleInSameClasses(Student student) {
-    	for(Classroom classroom: student.getClassesAttending()) {
-    		Teacher teacher = classroom.getTeacher();
-    		ArrayList<Student> peers = classroom.getPeers();
-    		// quarantine teacher
-    		quarantine(teacher);
-    		// quarantine classroom
-    		for(Student peer: peers) {
-    			quarantine(peer);
-    		}
-    	}
-    }
-    private void quarantine(Person person) {
-    	if(!person.getIsQuarantined() && !person.getIsImmune()) {
-			person.setDaysInQuarantine(0);
-			person.setQuarantined(true);
+	
+	public static void createTeachers(File file) {
+		
+		teachers = new ArrayList<>();
+		try {
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String[] tokens = scanner.nextLine().split(" ");
+				String name = tokens[0] + " " + tokens[1];
+				int age = Integer.valueOf(tokens[2]);
+				boolean isInfected = Boolean.valueOf(tokens[3]);
+				boolean isQuarantined = Boolean.valueOf(tokens[4]);
+				boolean isImmune = Boolean.valueOf(tokens[5]);
+				int daysInQuarantine = Integer.valueOf(tokens[6]);
+				float infectionProb = age/100.0f;
+				ArrayList<Classroom> classes = new ArrayList<>(); 
+				Teacher teacher = new Teacher(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age, classes);
+				teachers.add(teacher);
+			}
+			scanner.close();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
 		}
-    }
-    
-    private void updateQuarantineDate(Student student) {
-    
-		if(student.getIsQuarantined()) {
-			int daysSinceLastTested = Integer.valueOf(today) - Integer.valueOf(student.getDateLastTested());
-			int daysSpent = student.getDaysInQuarantine();
-			student.setDaysInQuarantine(daysSpent + daysSinceLastTested);
+	}
+	
+	public static void createClasses(File file) {
+		classrooms = new ArrayList<>();
+		try {
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String[] tokens = scanner.nextLine().split(" ");
+				String teacherName = tokens[0] + " " + tokens[1];
+				Teacher teacher = (Teacher) findPerson(teacherName);
+				// create classes
+				for(int i = 2; i < tokens.length; i++) {
+					String className = tokens[i];
+					int num = 0;
+					ArrayList<Student> peers = new ArrayList<>();
+					Classroom classroom = new Classroom(className, num, peers, teacher);
+					classrooms.add(classroom);
+				}
+			}
+			scanner.close();
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
-    	
-    }
-    private void checkIfInfected(Student student) {
-    
-		boolean isImmune = student.getIsImmune();
-		for(Person contact: student.getStrangerInteractions()) {
-			if(contact instanceof Student)
-				determineIfInfected(!isImmune && contact.getIsInfected(), student);
-			else
-				determineIfInfected(contact instanceof Stranger, student);
+	}
+	public static void createStrangers(File file) {
+		strangers = new ArrayList<>();
+		try {
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String[] tokens = scanner.nextLine().split(" ");
+				String name = tokens[0] + " " + tokens[1];
+				int age = Integer.valueOf(tokens[2]);
+				boolean isInfected = Boolean.valueOf(tokens[3]);
+				boolean isQuarantined = Boolean.valueOf(tokens[4]);
+				boolean isImmune = Boolean.valueOf(tokens[5]);
+				int daysInQuarantine = Integer.valueOf(tokens[6]);
+				float infectionProb = (100 - age)/100.0f;
+				Stranger stranger = new Stranger(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age);
+				strangers.add(stranger);
+			}
+			scanner.close();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void createStudents(File file) {
+//		strangers = new ArrayList<>();
+		students = new ArrayList<>();
+		try {
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNextLine()) {
+				String[] tokens = scanner.nextLine().split(" ");
+				String name = tokens[0] + " " + tokens[1];
+				int age = Integer.valueOf(tokens[2]);
+				int id = Integer.valueOf(tokens[3]);
+				boolean isInfected = Boolean.valueOf(tokens[4]);
+				boolean isQuarantined = Boolean.valueOf(tokens[5]);
+				boolean isImmune = Boolean.valueOf(tokens[6]);
+				int daysInQuarantine = Integer.valueOf(tokens[7]);
+				float infectionProb = (age)/100.0f;
+				// map student to classes
+				String[] classNames = scanner.nextLine().split(" ");
+				ArrayList<Classroom> classes = new ArrayList<>();
+				for(String className : classNames) {
+					Classroom oneClass = findClass(className);
+					classes.add(oneClass);
+				}
+				Student student = new Student(isInfected, isQuarantined, isImmune, daysInQuarantine, infectionProb, name, age, id, classes, new ArrayList<Stranger>(), new ArrayList<Student>());
+				
+				// map classes to students
+				for(Classroom classroom: classes) {
+					classroom.setNum(classroom.getNum() + 1);
+					classroom.getPeers().add(student);
+				}
+				students.add(student);
+
+			}
+			scanner.close();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void createInteractions(File file) {
+
+		try {
+			
+			Scanner scanner = new Scanner(file);
+			String lastDayChecked = scanner.nextLine().split(" ")[0];
+			String today = scanner.nextLine().split(" ")[0];
+			campusTracing.setLastChecked(lastDayChecked);
+			campusTracing.setToday(today);
+			campusTracing.setPopulation(students);
+			
+			while(scanner.hasNextLine()) {
+				String[] tokens = scanner.nextLine().split(" ");
+				Student student = (Student)findPerson(tokens[0] + " " + tokens[1]);
+				ArrayList<Person> immediateContacts = new ArrayList<>();
+				
+				for(int i = 2; i < tokens.length; i+=2) {
+					Person stranger = findPerson(tokens[i] + " " + tokens[i + 1]);
+					immediateContacts.add(stranger);
+				}
+				campusTracing.updateStudentImmediateContacts(student, immediateContacts);
+			}
+			scanner.close();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
 		}
 		
-		for(Person contact: student.getFriendInteractions()) {
-			if(contact instanceof Student)
-				determineIfInfected(!isImmune && contact.getIsInfected(), student);
-			else
-				determineIfInfected(contact instanceof Stranger, student);
-		}
+	}
+	public static Person findPerson(String fullName) {
 		
-		student.setDateLastTested(today);
-    	
-    }
-    private void determineIfInfected(boolean conditionForGettingInfected, Person person) {
-    	if(conditionForGettingInfected) {
-    		// if person isn't already infected
-    		if(!person.getIsInfected()) {
-    			boolean infected = Math.random() <= person.getInfectionProb();
-    			person.setInfected(infected);
-    		}
-    	}
-    }
-    private String getRiskLevel(double percentInfected) {
-        if(percentInfected <= 5)
-        {
-            return "Low";
-        }
-        else if(percentInfected <= 10)
-        {
-            return "Low Moderate";
-        }
-        else if(percentInfected <= 20)
-        {
-            return "Moderate";
-        }
-        else
-        {
-            return "High";
-        }
-    }
-
-
-    public void displayStatistics() 
-    {
-    	// Need to figure out what data structure to make lastChecked.
-    	// Maybe an ArrayList of booleans for each day since semester started
-        if(!lastChecked.equals(today))
-        {
-        	testStudents();
-        }
-
-        // Statistics data holder
-        ArrayList<Student> infected = new ArrayList<>();;
-        ArrayList<Student> quarantined = new ArrayList<>();
-        ArrayList<Student> immune = new ArrayList<>();
-        int daysInQuarantine = 0;
-        int firstDayS = 0, lastDayS = 0;
-        
-        // Populate statistics
-        for(Student s : population)
-        {
-            if(s.getIsInfected())
-            {
-                infected.add(s);
-            }
-            if(s.getIsQuarantined())
-            {
-                quarantined.add(s);
-                daysInQuarantine += s.getDaysInQuarantine();
-                // Need to make sure the cases are right
-                if(s.getDaysInQuarantine() == 0)
-                {
-                    
-                    firstDayS++;
-                }
-                else if(s.getDaysInQuarantine() == 14)
-                {
-                    lastDayS++;
-                }
-            }
-            if(s.getIsImmune())
-            {
-                immune.add(s);
-            }
-        }
-
-        // Process Statistics
-        ArrayList<String> statistics = new ArrayList<>();                                   // Hold all the strings to be printed
-        double percentInfected = ((infected.size() * 1.0) / population.size()) * 100;       // Percent of Infected People
-        String riskLevel = getRiskLevel(percentInfected);               // Risk Level
-        double avgQuarantine = quarantined.size() != 0 ? ((daysInQuarantine * 1.0) / quarantined.size()) : 0;      // Mean Days Spent in Quarantine
-        // graph days spent in quarantine. calculate variance/std dev.
-
-        statistics.add("There are " + infected.size() + " infected studies.");
-        statistics.add("This makes up for " + percentInfected + "% of the Student Body.");
-        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + avgQuarantine + " days already spent.");
-        statistics.add( lastDayS + " students are doing their last day of quarantine, while " + firstDayS + " have been quarantined today");
-        statistics.add("The campus is at a "+ riskLevel + " risk level.");
-        for(String stat: statistics) {
-        	System.out.println(stat);
-        }
-    }
+		for(Teacher teacher: teachers) {
+			if(teacher.getName().equals(fullName)) {
+				return teacher;
+			}
+		}
+		for(Student student: students) {
+			if(student.getName().equals(fullName)) {
+				return student;
+			}
+		}
+		for(Stranger stranger: strangers) {
+			if(stranger.getName().equals(fullName))
+				return stranger;
+		}
+		System.out.println("Person not Found");
+		return null;
+	}
+	public static Classroom findClass(String className) {
+		for(Classroom classroom : classrooms) {
+			if(classroom.getName().equals(className)) {
+				return classroom;
+			}
+		}
+		return null;
+	}
 }
