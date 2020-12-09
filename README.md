@@ -28,7 +28,7 @@ Our Driver class will be responsible hold an ArrayList of Students holding the e
 
 ## Inheritance Hierarchy
 
-![inheritance hierarchy](./screenshots/umls/inheritance-hierarchy.png)
+![inheritance hierarchy](./screenshots/umls/inheritannce-hierarchy.png)
 
 ## Classes
 
