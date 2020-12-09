@@ -52,4 +52,8 @@ public class Student extends Person {
 	public void setFriendInteractions(ArrayList<Student> friendInteractions) {
 		this.friendInteractions = friendInteractions;
 	}	
+	@Override
+	public String toString() {
+		return this.getName() + " " + this.getAge() + " " + this.getId() + " " + this.getIsInfected() + " " + this.getIsQuarantined() + " " + this.getIsImmune() + " " + this.getDaysInQuarantine(); 
+	}
 }
