@@ -12,21 +12,49 @@ public class Driver {
   public static ArrayList<Stranger> strangers;
   public static CampusTracing campusTracing;
   
+  
 	public static void main (String[] args) {
 		
 		campusTracing = new CampusTracing();
-		// 
+		// create objects
     	createTeachers(new File("teachers.txt"));
     	createClasses(new File("classes.txt"));
     	createStrangers(new File("strangers.txt"));
     	createStudents(new File("students.txt"));
-    	createInteractions(new File("interactions.txt"));
-    	// 
-    	campusTracing.testStudents();
-    	campusTracing.displayStatistics();
+    	// create interactions if there are more unread interaction files
+    	if (newInteractionFilesExist()){
+    		createInteractions();
+        	campusTracing.testStudents();
+        	// display campus statistics
+        	campusTracing.displayStatistics();
+    	} else {
+    		System.out.println("There are no new Interaction files in this program");
+    		System.out.println("*".repeat(40));
+    	}
     	
     }
-	
+	public static boolean newInteractionFilesExist() {
+		boolean result = false;
+		if (determineNumberOfInteractions() < 4)
+			result = true;
+		return result;
+	}
+	public static int determineNumberOfInteractions() {
+		int i = 0;
+		try {
+			
+			Scanner scanner = new Scanner(new File("prevStats.txt"));
+			while (scanner.hasNextLine()) {
+				scanner.nextLine();
+				i++;
+			}
+			
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return i;
+	}
 	public static void createTeachers(File file) {
 		
 		teachers = new ArrayList<>();
@@ -132,8 +160,9 @@ public class Driver {
 			e.printStackTrace();
 		}
 	}
-	public static void createInteractions(File file) {
-
+	public static void createInteractions() {
+		String filename = "interactions" + (determineNumberOfInteractions() + 1) + ".txt";
+		File file = new File(filename);
 		try {
 			
 			Scanner scanner = new Scanner(file);
