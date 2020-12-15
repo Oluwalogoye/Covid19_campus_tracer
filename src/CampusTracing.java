@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,9 +15,7 @@ public class CampusTracing {
     
   
     public CampusTracing() {
-    	
     }
-    
 
 	public CampusTracing(ArrayList<Student> p, String c, String today) {
         population = p;
@@ -64,14 +64,14 @@ public class CampusTracing {
     	
     	StringBuilder buffer = new StringBuilder();
     	for(int i = 0; i < population.size(); i++) {
-    		Student student = population.get(i);
-    		// check for infected students
+    		Student student = population.get(i);	
+        	// update quarantine dates
+        	updateQuarantineDate(student);
+        	
+        	// check for infected students
         	checkIfInfected(student);
         	if(student.getIsInfected())
         		quarantine(student);
-        	
-        	// update quarantine dates
-        	updateQuarantineDate(student);
         	
         	// quarantine entire class if student infected
         	if(student.getIsInfected()) {
@@ -128,6 +128,7 @@ public class CampusTracing {
     
     private void updateQuarantineDate(Student student) {
     
+    	student.setDateLastTested(lastChecked);
 		if(student.getIsQuarantined()) {
 			int daysSinceLastTested = Integer.valueOf(today) - Integer.valueOf(student.getDateLastTested());
 			int daysSpent = student.getDaysInQuarantine();
@@ -182,17 +183,127 @@ public class CampusTracing {
             return "High";
         }
     }
-
-
+    public void histogram (ArrayList<Integer[]> percents) {
+    	//print and underline text that indicates this method will print class histogram
+    	System.out.println("Printing histogram\n" + "-".repeat(20) + "\n");
+		//code to develop the histogram
+		
+		//some important variables to develop the histogram
+		int histogramWidth = 5;
+		int maxDigits = 5; //maximum score, 100, is 3 digits
+		int topScore =  100;
+		int elements = percents.size();
+		//create a temporary arrayList and add the values in the the ArrayList of scores to it; it's stores all the scores that will be added to the y-axis of the histogram
+		ArrayList<Integer> temporary = new ArrayList<>();
+		for (int i = 0; i <= 10; i ++) {
+			temporary.add(i * 10);
+		}
+		
+		//treat the number of lines from the topScore to - 1 as a grid
+		//beginning from the score of the top scorer to 0, loop through each row 
+		for(int i = topScore; i >= -1; i -- ) {
+			
+			//set the first 3 (maximum Digits of a score) columns of every row to the index if the index is one of the scores in the scores ArrayList; otherwise, put 3 (maximum Digits of a score) spaces
+			if(i > 0 && temporary.contains(i)) {
+				//enter the digits of the score and the appropriate space, so that their sum is 3 (maximum Digits of a score)
+				String num = Integer.toString(i);
+				for(int p = 0; p < maxDigits; p ++ ) {
+					if(p < num.length()) {
+						System.out.print(num.charAt(p));
+					}
+					else {
+						System.out.print(" ");
+					}
+				}
+				if (i >= 0)
+					System.out.print("|");
+				else 
+					System.out.print(" ");
+				//delete the added score from the temporary duplicate of scores to avoid repetition
+				if(temporary.contains(i)) {
+					temporary.remove(temporary.indexOf(i));
+				}
+				
+			}
+			//enter 3 (maximum Digits of a score) spaces if the index isn't in the scores ArrayList
+			else {
+				for(int s= 0;s < maxDigits; s++) {
+					System.out.print(" ");
+				}
+				if(i >= 0)
+					System.out.print("|");
+				else 
+					System.out.print(" ");
+			}
+			//loop through every column to add the appropriate data 
+			for(int j = 0; j < elements * histogramWidth; j += histogramWidth){
+				System.out.print(" ");
+				if(i == 0) {
+					for(int q = 0; q < histogramWidth; q ++) {
+						System.out.print("-");
+					}
+				}
+				else if(i == -1) {
+					String date = String.valueOf(percents.get(j/histogramWidth)[1]);
+					for(int f = 0; f < histogramWidth; f++) {
+						if(f < date.length()) {
+							System.out.print(date.charAt(f));
+						}
+						else {
+							System.out.print(" ");
+						}
+					}
+				}
+				else if(i == (percents.get(j/histogramWidth)[0])) {
+					for(int q = 0; q < histogramWidth; q ++) {
+						System.out.print("-");
+					}
+				}
+				else if(percents.get(j/histogramWidth)[0] > i) {
+					for(int q = 0; q < histogramWidth; q++) {
+						if( q == 0 || q == histogramWidth - 1) {
+							System.out.print("|");
+						}
+						else{
+							System.out.print(" ");
+						}
+					}
+				}
+				else if(i > percents.get(j/histogramWidth)[0]) {
+					for(int q = 0; q< histogramWidth; q++) {
+						System.out.print(" ");
+					}					
+				}
+			}
+			System.out.println();
+		}
+    }
+    
+    public void addAllPrevStats(ArrayList<Integer[]> list) {
+    	try {
+    		Scanner scanner = new Scanner(new File("prevStats.txt"));
+    		while(scanner.hasNextLine()) {
+    			String[] tokens = scanner.nextLine().split(" ");
+    			int perc = Integer.valueOf(tokens[0]);
+    			int date = Integer.valueOf(tokens[1]);
+    			list.add(new Integer[] {perc, date});
+    		}
+    		scanner.close();
+    	} catch (FileNotFoundException e) {
+    		e.printStackTrace();
+    	}
+    }
+    public void addNewStat(Integer[] newPercInfo) {
+    	try {
+    		FileWriter writer = new FileWriter("prevStats.txt", true);
+    		writer.write(newPercInfo[0] + " " + newPercInfo[1] + "\n");
+    		writer.close();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
     public void displayStatistics() 
     {
-    	// Need to figure out what data structure to make lastChecked.
-    	// Maybe an ArrayList of booleans for each day since semester started
-        if(!lastChecked.equals(today))
-        {
-        	testStudents();
-        }
-
         // Statistics data holder
         ArrayList<Student> infected = new ArrayList<>();;
         ArrayList<Student> quarantined = new ArrayList<>();
@@ -201,29 +312,22 @@ public class CampusTracing {
         int firstDayS = 0, lastDayS = 0;
         
         // Populate statistics
-        for(Student s : population)
-        {
-            if(s.getIsInfected())
-            {
+        for(Student s : population) {
+            if(s.getIsInfected()) {
                 infected.add(s);
             }
-            if(s.getIsQuarantined())
-            {
+            if(s.getIsQuarantined()) {
                 quarantined.add(s);
                 daysInQuarantine += s.getDaysInQuarantine();
                 // Need to make sure the cases are right
-                if(s.getDaysInQuarantine() == 0)
-                {
-                    
+                if(s.getDaysInQuarantine() == 0) {
                     firstDayS++;
                 }
-                else if(s.getDaysInQuarantine() == 14)
-                {
+                else if (s.getDaysInQuarantine() == 14) {
                     lastDayS++;
                 }
             }
-            if(s.getIsImmune())
-            {
+            if (s.getIsImmune()) {
                 immune.add(s);
             }
         }
@@ -231,17 +335,30 @@ public class CampusTracing {
         // Process Statistics
         ArrayList<String> statistics = new ArrayList<>();                                   // Hold all the strings to be printed
         double percentInfected = ((infected.size() * 1.0) / population.size()) * 100;       // Percent of Infected People
+        int percAsInt = (int)Math.round(percentInfected);
         String riskLevel = getRiskLevel(percentInfected);               // Risk Level
         double avgQuarantine = quarantined.size() != 0 ? ((daysInQuarantine * 1.0) / quarantined.size()) : 0;      // Mean Days Spent in Quarantine
         // graph days spent in quarantine. calculate variance/std dev.
-
+        
+        System.out.println();
+        
         statistics.add("There are " + infected.size() + " infected studies.");
-        statistics.add("This makes up for " + percentInfected + "% of the Student Body.");
-        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + Math.round(avgQuarantine) + " days already spent.");
+        statistics.add("This makes up for " + percAsInt + "% of the Student Body.");
+        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + avgQuarantine + " days already spent.");
         statistics.add( lastDayS + " students are doing their last day of quarantine, while " + firstDayS + " have been quarantined today");
         statistics.add("The campus is at a "+ riskLevel + " risk level.");
+        
         for(String stat: statistics) {
         	System.out.println(stat);
         }
+        // call histogram
+        
+        ArrayList<Integer[]> percents = new ArrayList<>();
+        addAllPrevStats(percents);
+        Integer[] percentInfo = new Integer[] {percAsInt, Integer.valueOf(today)};
+        percents.add(percentInfo);
+        addNewStat(percentInfo);
+        histogram(percents);
     }
+    
 }
