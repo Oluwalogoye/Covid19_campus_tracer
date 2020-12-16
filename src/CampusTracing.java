@@ -343,8 +343,8 @@ public class CampusTracing {
         System.out.println();
         
         statistics.add("There are " + infected.size() + " infected studies.");
-        statistics.add("This makes up for " + percAsInt + "% of the Student Body.");
-        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + avgQuarantine + " days already spent.");
+        statistics.add("This makes up for " + String.format("%,.2f", percentInfected) + "% of the Student Body.");
+        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + String.format("%,.2f", avgQuarantine) + " days already spent.");
         statistics.add( lastDayS + " students are doing their last day of quarantine, while " + firstDayS + " have been quarantined today");
         statistics.add("The campus is at a "+ riskLevel + " risk level.");
         
