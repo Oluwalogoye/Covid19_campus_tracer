@@ -344,13 +344,15 @@ public class CampusTracing {
         
         statistics.add("There are " + infected.size() + " infected studies.");
         statistics.add("This makes up for " + String.format("%,.2f", percentInfected) + "% of the Student Body.");
-        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have completed an average of " + String.format("%,.2f", avgQuarantine) + " days already spent.");
+        statistics.add("There are " + quarantined.size() + " Students in quarantine, which have already completed an average of " + String.format("%,.2f", avgQuarantine) + " days.");
         statistics.add( lastDayS + " students are doing their last day of quarantine, while " + firstDayS + " have been quarantined today");
         statistics.add("The campus is at a "+ riskLevel + " risk level.");
+        
         
         for(String stat: statistics) {
         	System.out.println(stat);
         }
+        System.out.println("*".repeat(40) + "\n");
         // call histogram
         
         ArrayList<Integer[]> percents = new ArrayList<>();
