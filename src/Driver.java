@@ -14,25 +14,26 @@ public class Driver {
   
   
 	public static void main (String[] args) {
-		
+		// initalize campusTracing object
 		campusTracing = new CampusTracing();
 		// create objects
-		createTeachers(new File("teachers.txt"));
-		createClasses(new File("classes.txt"));
-		createStrangers(new File("strangers.txt"));
-		createStudents(new File("students.txt"));
-		// create interactions if there are more unread interaction files
-		if (newInteractionFilesExist()){
-			createInteractions();
-			campusTracing.testStudents();
-			// display campus statistics
-			campusTracing.displayStatistics();
-		} else {
-			System.out.println("There are no new Interaction files in this program");
-			System.out.println("*".repeat(40));
-		}
-
-	    }
+    	createTeachers(new File("teachers.txt"));
+    	createClasses(new File("classes.txt"));
+    	createStrangers(new File("strangers.txt"));
+    	createStudents(new File("students.txt"));
+    	// create interactions if there are more unread interaction files
+    	if (newInteractionFilesExist()){
+    		createInteractions();
+    		// test population
+        	campusTracing.testStudents();
+        	// display campus statistics
+        	campusTracing.displayStatistics();
+    	} else { // There are no new interactions to display
+    		System.out.println("There are no new Interaction files in this program");
+    		System.out.println("*".repeat(40));
+    	}
+    	
+    }
 	public static boolean newInteractionFilesExist() {
 		boolean result = false;
 		if (determineNumberOfInteractions() < 4)
