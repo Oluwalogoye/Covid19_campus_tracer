@@ -36,7 +36,7 @@ public class Driver {
     }
 	public static boolean newInteractionFilesExist() {
 		boolean result = false;
-		if (determineNumberOfInteractions() < 4)
+		if (determineNumberOfInteractions() < 5)
 			result = true;
 		return result;
 	}
